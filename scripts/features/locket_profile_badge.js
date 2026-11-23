@@ -29,11 +29,16 @@ function transformProfileResponse(bodyString, options) {
 
     var userObj = null;
 
+    // Pattern 1: data.result.data (Locket v2 standard)
     if (data.result && data.result.data && typeof data.result.data === "object") {
         userObj = data.result.data;
-    } else if (data.data && typeof data.data === "object") {
+    }
+    // Pattern 2: data.data (alternate direct wrap)
+    else if (data.data && typeof data.data === "object") {
         userObj = data.data;
-    } else if (data.uid) {
+    }
+    // Pattern 3: direct user profile object
+    else if (data.uid) {
         userObj = data;
     }
 
@@ -41,6 +46,7 @@ function transformProfileResponse(bodyString, options) {
         return { modified: false, body: bodyString, reason: "user_object_not_found" };
     }
 
+    // Set Gold badge while keeping all existing fields intact
     if (userObj.badge !== GOLD_BADGE_NAME) {
         userObj.badge = GOLD_BADGE_NAME;
         return {

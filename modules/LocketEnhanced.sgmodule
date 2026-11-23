@@ -3,7 +3,7 @@
 #!category=Locket Enhanced
 #!author=Locket Enhanced Team
 #!homepage=https://github.com/nson496/LocketEnhanced-Shadowrocket
-#!version=0.1.1-beta
+#!version=0.1.2-beta
 #!system=ios
 
 [Rule]
@@ -18,7 +18,7 @@ AND,((DOMAIN,firebaseremoteconfig.googleapis.com),(PROTOCOL,UDP)),REJECT
 ^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+ header-del x-goog-if-none-match
 
 [Script]
-# 1. Firebase Remote Config Response - Mở khóa Video 60s có tiếng, Upload video, Caption 500 ký tự, Theme
+# 1. Firebase Remote Config Response - Mở khóa Video 60s có tiếng, Caption 500 ký tự, Theme
 Locket_RemoteConfig = type=http-response, pattern=^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/main/scripts/core/locket_remoteconfig.js, requires-body=true, max-size=-1, timeout=30
 
 [MITM]

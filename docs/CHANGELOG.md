@@ -4,6 +4,22 @@ Tất cả các thay đổi đáng chú ý của dự án **Locket Enhanced Shad
 
 ---
 
+## [v0.1.2-beta] — 2026-11-23
+
+### 🛡️ Thẩm Định Tính Năng & Tối Ưu Tương Thích Runtime
+- **Áp dụng Strict Allowlist cho Remote Config:**
+  - Giới hạn can thiệp vào đúng 4 trường cấu hình có bằng chứng kỹ thuật: `video_max_duration_seconds`, `video_audio_enabled`, `caption_character_limit`, `themes_enabled`.
+  - Loại bỏ toàn bộ các khóa tự tạo / giả định không có trong schema Locket (`can_record_long_video`, `allow_video_picker`, `caption_max_lines`, v.v.) để bảo đảm không làm hỏng schema của client.
+  - Ép kiểu dữ liệu `String` nghiêm ngặt cho toàn bộ các trường `entries` theo đặc tả Firebase Remote Config REST API.
+- **Tích Hợp Shadowrocket Mock Test Suite:**
+  - Bổ sung bộ kiểm thử tự động giả lập toàn diện môi trường runtime Shadowrocket (`$request`, `$response`, `$done`, `$argument`, `$persistentStore`).
+  - Kiểm thử 19 kịch bản kiểm thử: schema lạ, JSON hỏng, Safe Mode, Header Cache Cleaner, PII Redaction và vượt qua 100% test cases.
+- **Tài Liệu Đánh Giá Tương Thích & Kế Hoạch Test iPhone:**
+  - Bổ sung `docs/REMOTE_CONFIG_COMPATIBILITY.md`: Bảng đối chiếu bằng chứng kỹ thuật, kiểu dữ liệu và trạng thái của từng trường cấu hình.
+  - Bổ sung `docs/IPHONE_COMPATIBILITY_TEST.md`: Quy trình kiểm chứng thực tế trên iPhone (đánh dấu `NOT_RUN` minh bạch khi chưa có phần cứng vật lý kết nối).
+
+---
+
 ## [v0.1.1-beta] — 2026-11-23
 
 ### 🚀 Tính Năng & Cải Tiến Mới

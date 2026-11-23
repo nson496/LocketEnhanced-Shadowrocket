@@ -1,12 +1,13 @@
 /**
  * Locket Enhanced - HTTP Request Header Cleaner
- * Strips conditional cache headers (ETag, If-None-Match) from Firebase Remote Config
+ * Strips conditional cache headers (ETag, If-None-Match) from RevenueCat and Firebase
  * to ensure servers return full HTTP 200 responses with body instead of empty HTTP 304.
  */
 
 var DROP_HEADER_NAMES = [
     "if-none-match",
     "if-modified-since",
+    "x-revenuecat-etag",
     "x-goog-if-none-match"
 ];
 

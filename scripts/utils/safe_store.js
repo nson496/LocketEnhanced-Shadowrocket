@@ -37,6 +37,7 @@ function safeWrite(key, value) {
 
 function safeLog(message) {
     try {
+        // Redact any accidental tokens or auth keys
         var sanitized = String(message)
             .replace(/Bearer\s+[A-Za-z0-9\-_.]+/gi, "Bearer [REDACTED]")
             .replace(/AIzaSy[A-Za-z0-9\-_]{33}/gi, "[API_KEY_REDACTED]")

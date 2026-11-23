@@ -1,6 +1,6 @@
 # Locket Enhanced — Shadowrocket Edition
 
-[![Release](https://img.shields.io/badge/Release-v0.1.1--beta-blue.svg)](https://github.com/nson496/LocketEnhanced-Shadowrocket/releases)
+[![Release](https://img.shields.io/badge/Release-v0.1.2--beta-blue.svg)](https://github.com/nson496/LocketEnhanced-Shadowrocket/releases)
 [![Status](https://img.shields.io/badge/Status-Public%20Distribution-success.svg)](https://github.com/nson496/LocketEnhanced-Shadowrocket)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Zero PII](https://img.shields.io/badge/Privacy-Zero%20PII-brightgreen.svg)](docs/SECURITY.md)

@@ -1,39 +1,29 @@
 /**
  * Locket Enhanced - Firebase Remote Config Feature Flag Engine
- * Modifies client-side Remote Config entries to unlock:
- * - 60s Extended Video Recording
- * - Video Sound & Audio Recording Stream (High Priority)
- * - Video Upload from Camera Roll toggle
- * - Extended Caption limit (500 chars)
- * - Theme & Widget Customization flags
+ * Version: 0.1.2-beta
+ * 
+ * Modifies client-side Remote Config entries to configure:
+ * - Extended Video Recording (video_max_duration_seconds)
+ * - Video Sound Pipeline (video_audio_enabled)
+ * - Extended Caption limit (caption_character_limit)
+ * - Theme Customization (themes_enabled)
+ * 
+ * Strictly adheres to verified allowlisted fields and string type requirements.
+ * Rejects invented keys to ensure clean schema and client stability.
  */
 
+var ALLOWED_FIELDS = [
+    "video_max_duration_seconds",
+    "video_audio_enabled",
+    "caption_character_limit",
+    "themes_enabled"
+];
+
 var DEFAULT_CONFIG_OVERRIDES = {
-    // Extended Video Recording
     "video_max_duration_seconds": "60",
-    "video_max_duration_ms": "60000",
-    "can_record_long_video": "true",
-    "max_video_length_seconds": "60",
-
-    // Video With Sound (Priority Feature)
     "video_audio_enabled": "true",
-    "enable_video_sound": "true",
-    "record_audio_with_video": "true",
-
-    // Camera Roll Video Upload
-    "can_upload_video": "true",
-    "enable_video_upload": "true",
-    "allow_video_picker": "true",
-
-    // Caption Enhancements
     "caption_character_limit": "500",
-    "caption_max_lines": "5",
-    "enable_multiline_caption": "true",
-
-    // Visual Customizations
-    "themes_enabled": "true",
-    "widget_customization_enabled": "true",
-    "can_use_custom_icons": "true"
+    "themes_enabled": "true"
 };
 
 function parseScriptArgument(argString) {
@@ -43,7 +33,7 @@ function parseScriptArgument(argString) {
     for (var i = 0; i < pairs.length; i++) {
         var parts = pairs[i].split("=");
         if (parts.length === 2) {
-            params[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1]);
+            params[decodeURIComponent(parts[0]).trim()] = decodeURIComponent(parts[1]).trim();
         }
     }
     return params;
@@ -52,7 +42,7 @@ function parseScriptArgument(argString) {
 function transformRemoteConfigResponse(bodyString, options) {
     options = options || {};
     if (!bodyString || typeof bodyString !== "string") {
-        return { modified: false, body: bodyString };
+        return { modified: false, body: bodyString, reason: "empty_or_invalid_body" };
     }
 
     if (options.safeMode === true) {
@@ -66,47 +56,62 @@ function transformRemoteConfigResponse(bodyString, options) {
         return { modified: false, body: bodyString, error: "json_parse_error" };
     }
 
-    if (!data || typeof data !== "object") {
+    // Remote Config response schema MUST be an object with an entries object
+    if (!data || typeof data !== "object" || Array.isArray(data)) {
         return { modified: false, body: bodyString, reason: "invalid_root_type" };
     }
 
-    // Remote Config returns { entries: { ... }, state: "UPDATE" }
-    data.entries = data.entries || {};
-
-    var overrides = Object.assign({}, DEFAULT_CONFIG_OVERRIDES);
-
-    // Apply custom overrides if passed via options/argument
-    if (options.videoDuration) {
-        var durationStr = String(options.videoDuration);
-        overrides["video_max_duration_seconds"] = durationStr;
-        overrides["video_max_duration_ms"] = String(Number(options.videoDuration) * 1000);
-        overrides["max_video_length_seconds"] = durationStr;
+    if (!data.entries || typeof data.entries !== "object" || Array.isArray(data.entries)) {
+        // Unknown or unexpected schema -> keep original response unmodified
+        return { modified: false, body: bodyString, reason: "entries_schema_mismatch" };
     }
 
-    if (options.audioEnabled !== undefined) {
-        var audioStr = String(options.audioEnabled);
-        overrides["video_audio_enabled"] = audioStr;
-        overrides["enable_video_sound"] = audioStr;
+    // Clone default overrides
+    var overrides = {};
+    for (var i = 0; i < ALLOWED_FIELDS.length; i++) {
+        var field = ALLOWED_FIELDS[i];
+        overrides[field] = DEFAULT_CONFIG_OVERRIDES[field];
     }
 
-    if (options.captionLimit) {
-        overrides["caption_character_limit"] = String(options.captionLimit);
+    // Apply custom parameters if provided via arguments
+    if (options.videoDuration !== undefined && options.videoDuration !== null && options.videoDuration !== "") {
+        var durationNum = parseInt(options.videoDuration, 10);
+        if (!isNaN(durationNum) && durationNum > 0 && durationNum <= 300) {
+            overrides["video_max_duration_seconds"] = String(durationNum);
+        }
+    }
+
+    if (options.audioEnabled !== undefined && options.audioEnabled !== null) {
+        var isAudio = options.audioEnabled === true || options.audioEnabled === "true";
+        overrides["video_audio_enabled"] = isAudio ? "true" : "false";
+    }
+
+    if (options.captionLimit !== undefined && options.captionLimit !== null && options.captionLimit !== "") {
+        var limitNum = parseInt(options.captionLimit, 10);
+        if (!isNaN(limitNum) && limitNum > 0 && limitNum <= 2000) {
+            overrides["caption_character_limit"] = String(limitNum);
+        }
+    }
+
+    if (options.themesEnabled !== undefined && options.themesEnabled !== null) {
+        var isThemes = options.themesEnabled === true || options.themesEnabled === "true";
+        overrides["themes_enabled"] = isThemes ? "true" : "false";
     }
 
     var modifiedCount = 0;
-    for (var key in overrides) {
-        if (Object.prototype.hasOwnProperty.call(overrides, key)) {
-            if (data.entries[key] !== overrides[key]) {
-                data.entries[key] = overrides[key];
-                modifiedCount++;
-            }
+    for (var j = 0; j < ALLOWED_FIELDS.length; j++) {
+        var key = ALLOWED_FIELDS[j];
+        var targetVal = String(overrides[key]);
+        if (data.entries[key] !== targetVal) {
+            data.entries[key] = targetVal;
+            modifiedCount++;
         }
     }
 
     return {
         modified: modifiedCount > 0,
         modifiedCount: modifiedCount,
-        body: JSON.stringify(data)
+        body: modifiedCount > 0 ? JSON.stringify(data) : bodyString
     };
 }
 
@@ -132,8 +137,9 @@ function handleResponse() {
     var options = {
         safeMode: isSafe || argParams.safeMode === "true",
         videoDuration: argParams.videoDuration,
-        audioEnabled: argParams.audio !== undefined ? argParams.audio === "true" : true,
-        captionLimit: argParams.captionLimit
+        audioEnabled: argParams.audio !== undefined ? argParams.audio : undefined,
+        captionLimit: argParams.captionLimit,
+        themesEnabled: argParams.themes !== undefined ? argParams.themes : undefined
     };
 
     var result = transformRemoteConfigResponse(rawBody, options);
@@ -146,10 +152,11 @@ function handleResponse() {
 // Export for Node.js unit tests
 if (typeof module !== "undefined" && module.exports) {
     module.exports = {
-        transformRemoteConfigResponse: transformRemoteConfigResponse,
+        ALLOWED_FIELDS: ALLOWED_FIELDS,
+        DEFAULT_CONFIG_OVERRIDES: DEFAULT_CONFIG_OVERRIDES,
         parseScriptArgument: parseScriptArgument,
-        handleResponse: handleResponse,
-        DEFAULT_CONFIG_OVERRIDES: DEFAULT_CONFIG_OVERRIDES
+        transformRemoteConfigResponse: transformRemoteConfigResponse,
+        handleResponse: handleResponse
     };
 }
 
