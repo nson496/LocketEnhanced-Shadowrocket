@@ -4,6 +4,22 @@ Tất cả các thay đổi đáng chú ý của dự án **Locket Enhanced Shad
 
 ---
 
+## [v0.1.5-beta] — 2026-11-24
+
+### 🔬 Bổ Sung Chế Độ Chẩn Đoán Độc Lập (Dedicated Diagnostic Mode)
+- **Module Chẩn Đoán Độc Lập (`LocketEnhanced-Diagnostic.sgmodule`):**
+  - Mặc định **100% không can thiệp, không chỉnh sửa** bất kỳ request hay response body nào (`requires-body=false`).
+  - **Không chặn UDP/QUIC:** Để toàn bộ kết nối của iOS hoạt động tự nhiên không can thiệp.
+  - Giám sát đồng thời: `firebaseremoteconfig.googleapis.com`, `firebaseremoteconfigrealtime.googleapis.com`, `api.locketcamera.com`, và `us-central1-locket-4252a.cloudfunctions.net`.
+- **Bộ Ghi Nhận Chẩn Đoán Thụ Động (`locket_diagnostic.js`):**
+  - Ghi nhận đầy đủ 2 loại sự kiện `REQUEST` và `RESPONSE`: Timestamp, Hostname, Event Type, Path (đã làm sạch query params), Status Code, Content-Type, Body Size.
+  - **Zero PII:** Tuyệt đối không log token, cookie, nội dung request/response body. Trả về `$done({})` ngay lập tức để không cản trở luồng stream HTTP/2.
+- **Tài Liệu Phân Tích Chuyên Sâu (`docs/DIAGNOSTIC_ANALYSIS.md`):**
+  - Đánh giá 5 giả thuyết vì sao chưa quan sát thấy Firebase Fetch (Backend riêng của Locket `/fetchUserV2`, In-app Defaults, Cache 12h, Firebase Installations, v.v.).
+  - Thẩm định tính xác thực của các cờ `video_max_duration_seconds`, `video_audio_enabled`, `caption_character_limit`, `themes_enabled` và đánh dấu trung thực là `UNVERIFIED_HYPOTHESIS`.
+
+---
+
 ## [v0.1.4-beta] — 2026-11-24
 
 ### 🔍 Xử Lý Lệch Endpoint Realtime & Bộ Chẩn Đoán Không Lưu PII

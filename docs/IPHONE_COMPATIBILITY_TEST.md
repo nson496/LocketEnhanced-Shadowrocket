@@ -35,7 +35,33 @@
 
 ---
 
-## 2. Hướng Dẫn Thực Hiện Khi Có iPhone Vật Lý
+## 2. Quy Trình Kiểm Thử Chẩn Đoán (Diagnostic Mode Testing)
+
+> [!TIP]
+> **Khuyên dùng:** Sử dụng module `LocketEnhanced-Diagnostic.sgmodule` để quan sát toàn bộ lưu lượng mạng thực tế của Locket mà không can thiệp, không sửa đổi dữ liệu và không chặn UDP/QUIC.
+
+### Các Bước Thực Hiện:
+1. **Cài Đặt Module Chẩn Đoán:**
+   - Trong Shadowrocket > **Cấu hình** > **Mô-đun** > Nhấn **`+`**.
+   - Dán URL: `https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.5-beta/modules/LocketEnhanced-Diagnostic.sgmodule`.
+   - Bật module.
+2. **Kích Hoạt Ghi Log:**
+   - Trong Shadowrocket, bật công tắc VPN.
+   - Chuyển sang tab **Nhật ký (Logs)** > Bật tính năng ghi nhật ký.
+3. **Mở Locket & Quan Sát Sự Kiện:**
+   - Mở ứng dụng Locket chính thức trên iPhone.
+   - Thực hiện thao tác: (1) Mở app, (2) Chụp thử ảnh, (3) Vào trang cá nhân, (4) Đóng và mở lại app.
+4. **Phân Tích Nhật Ký Được Ghi Nhận (`[LocketDiag]`):**
+   - Tìm kiếm các dòng bắt đầu bằng `[LocketDiag]`:
+     - Nếu xuất hiện: `[LocketDiag] ... REQ GET api.locketcamera.com/fetchUserV2` -> Xác nhận API Locket đang hoạt động.
+     - Nếu xuất hiện: `[LocketDiag] ... REQ POST firebaseremoteconfigrealtime.googleapis.com/...:streamFetchInvalidations` -> Xác nhận stream Realtime đã kết nối.
+     - Kiểm tra xem có xuất hiện request nào tới `firebaseremoteconfig.googleapis.com` hoặc `cloudfunctions.net` không.
+5. **Đánh Giá Kết Quả:**
+   - Nếu `firebaseremoteconfig.googleapis.com` KHÔNG xuất hiện nhưng `api.locketcamera.com` xuất hiện: Bằng chứng xác nhận Locket không dùng Remote Config fetch định kỳ mà tải cấu hình từ backend riêng của Locket!
+
+---
+
+## 3. Hướng Dẫn Thực Hiện Khi Có iPhone Vật Lý
 
 1. **Chuẩn bị:** 02 iPhone chạy iOS 15+ (Thiết bị A gửi, Thiết bị B nhận).
 2. **Kích hoạt ghi log an toàn:** Trong Shadowrocket, bật tính năng *Logging* để quan sát URL `firebaseremoteconfig.googleapis.com` trả về HTTP 200 kèm payload sửa đổi.
