@@ -1,6 +1,6 @@
 # Locket Enhanced — Shadowrocket Edition
 
-[![Release](https://img.shields.io/badge/Release-v0.1.3--beta-blue.svg)](https://github.com/nson496/LocketEnhanced-Shadowrocket/releases)
+[![Release](https://img.shields.io/badge/Release-v0.1.4--beta-blue.svg)](https://github.com/nson496/LocketEnhanced-Shadowrocket/releases)
 [![Status](https://img.shields.io/badge/Status-Public%20Distribution-success.svg)](https://github.com/nson496/LocketEnhanced-Shadowrocket)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Zero PII](https://img.shields.io/badge/Privacy-Zero%20PII-brightgreen.svg)](docs/SECURITY.md)
@@ -9,12 +9,12 @@ Locket Enhanced Shadowrocket Edition là module mở rộng dành cho ứng dụ
 
 ---
 
-## 🚀 Quick Install (Cài Đặt Nhanh v0.1.3-beta)
+## 🚀 Quick Install (Cài Đặt Nhanh v0.1.4-beta)
 
 ### Cách 1: One-Click Import vào Shadowrocket
 Mở link sau trên Safari (iPhone đã cài Shadowrocket):
 ```text
-shadowrocket://install/module?url=https%3A%2F%2Fraw.githubusercontent.com%2Fnson496%2FLocketEnhanced-Shadowrocket%2Fv0.1.3-beta%2Fmodules%2FLocketEnhanced.sgmodule
+shadowrocket://install/module?url=https%3A%2F%2Fraw.githubusercontent.com%2Fnson496%2FLocketEnhanced-Shadowrocket%2Fv0.1.4-beta%2Fmodules%2FLocketEnhanced.sgmodule
 ```
 
 ### Cách 2: Thêm Module Thủ Công qua HTTPS URL
@@ -22,14 +22,14 @@ shadowrocket://install/module?url=https%3A%2F%2Fraw.githubusercontent.com%2Fnson
 2. Nhấn biểu tượng dấu **+** ở góc trên bên phải.
 3. Dán một trong hai URL đã cố định phiên bản (Pinned Release):
 
-- **Bản Tiêu Chuẩn (Stable / Recommended - v0.1.3-beta):**
+- **Bản Tiêu Chuẩn (Stable / Recommended - v0.1.4-beta):**
   ```text
-  https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.3-beta/modules/LocketEnhanced.sgmodule
+  https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.4-beta/modules/LocketEnhanced.sgmodule
   ```
 
-- **Bản Beta (Configurable Arguments & Experimental Features - v0.1.3-beta):**
+- **Bản Beta (Configurable Arguments, Realtime Diag - v0.1.4-beta):**
   ```text
-  https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.3-beta/modules/LocketEnhanced-Beta.sgmodule
+  https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.4-beta/modules/LocketEnhanced-Beta.sgmodule
   ```
 
 4. Bật công tắc Module vừa thêm.

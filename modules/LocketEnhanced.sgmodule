@@ -3,13 +3,14 @@
 #!category=Locket Enhanced
 #!author=Locket Enhanced Team
 #!homepage=https://github.com/nson496/LocketEnhanced-Shadowrocket
-#!version=0.1.3-beta
+#!version=0.1.4-beta
 #!system=ios
 
 [Rule]
-# Chặn giao thức QUIC/UDP trên Firebase Remote Config để ép iOS chuyển về TCP/HTTP.
+# Chặn giao thức QUIC/UDP trên cả Fetch và Realtime Remote Config để ép iOS chuyển về TCP/HTTP.
 # Giúp Shadowrocket bắt và thực thi script can thiệp chính xác 100%.
 AND,((DOMAIN,firebaseremoteconfig.googleapis.com),(PROTOCOL,UDP)),REJECT
+AND,((DOMAIN,firebaseremoteconfigrealtime.googleapis.com),(PROTOCOL,UDP)),REJECT
 
 [Header Rewrite]
 # Xóa các header điều kiện ETag và Cache để chống lỗi server trả HTTP 304 Not Modified rỗng body
@@ -18,8 +19,8 @@ AND,((DOMAIN,firebaseremoteconfig.googleapis.com),(PROTOCOL,UDP)),REJECT
 ^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+ header-del x-goog-if-none-match
 
 [Script]
-# 1. Firebase Remote Config Response - Mở khóa Video 60s có tiếng, Caption 500 ký tự, Theme (Pinned to v0.1.3-beta)
-Locket_RemoteConfig = type=http-response, pattern=^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.3-beta/scripts/core/locket_remoteconfig.js, requires-body=true, max-size=-1, timeout=30
+# 1. Firebase Remote Config Response - Mở khóa Video 60s có tiếng, Caption 500 ký tự, Theme (Pinned to v0.1.4-beta)
+Locket_RemoteConfig = type=http-response, pattern=^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.4-beta/scripts/core/locket_remoteconfig.js, requires-body=true, max-size=-1, timeout=30
 
 [MITM]
 hostname = %APPEND% firebaseremoteconfig.googleapis.com

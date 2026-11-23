@@ -4,6 +4,22 @@ Tất cả các thay đổi đáng chú ý của dự án **Locket Enhanced Shad
 
 ---
 
+## [v0.1.4-beta] — 2026-11-24
+
+### 🔍 Xử Lý Lệch Endpoint Realtime & Bộ Chẩn Đoán Không Lưu PII
+- **Phân Tích & Phân Biệt Realtime Stream vs Standard Fetch:**
+  - Bổ sung tài liệu phân tích chuyên sâu `docs/REALTIME_VS_FETCH_ANALYSIS.md` giải thích cơ chế `:streamFetchInvalidations` của `firebaseremoteconfigrealtime.googleapis.com` và cơ chế bộ nhớ đệm 12 giờ của Firebase iOS SDK.
+  - Xác nhận endpoint Realtime chỉ truyền tín hiệu invalidation (`templateVersion`), tuyệt đối không rewrite body của stream này để tránh làm crash `RCNConfigRealtime.m`.
+- **Bổ Sung Bộ Ghi Nhận Chẩn Đoán (`locket_diagnostic.js`):**
+  - Tích hợp script chẩn đoán an toàn, chỉ ghi lại metadata tối thiểu: Timestamp, Method, Host, Path.
+  - **Zero PII:** Tuyệt đối không log Authorization token, cookie, request/response body, API keys. Trả về `$done({})` ngay lập tức để không gây gián đoạn stream HTTP/2.
+- **Chặn UDP/QUIC Đầy Đủ:**
+  - Bổ sung quy tắc REJECT UDP cho `firebaseremoteconfigrealtime.googleapis.com` trên cả 2 bản Standard và Beta module, ép toàn bộ lưu lượng Realtime sang TCP.
+- **Cập Nhật Cố Định Version Tag `v0.1.4-beta`:**
+  - Toàn bộ `script-path` được ghim vào tag `v0.1.4-beta`.
+
+---
+
 ## [v0.1.3-beta] — 2026-11-23
 
 ### 🔧 Bản Vá Đồng Bộ Phiên Bản & Cố Định Script-Path (Tag-Pinned Distribution)
