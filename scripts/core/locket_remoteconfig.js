@@ -1,12 +1,13 @@
 /**
  * Locket Enhanced - Firebase Remote Config Feature Flag Engine
- * Version: 0.1.2-beta
+ * Version: 0.1.6-beta
  * 
  * Modifies client-side Remote Config entries to configure:
- * - Extended Video Recording (video_max_duration_seconds)
- * - Video Sound Pipeline (video_audio_enabled)
- * - Extended Caption limit (caption_character_limit)
- * - Theme Customization (themes_enabled)
+ * - Extended Video Recording (camera.max_duration, camera_roll.max_duration, video_max_duration_seconds)
+ * - Video Sound Pipeline (video_audio_enabled, camera.sound_enabled, camera.microphone)
+ * - Extended Caption limit (caption_character_limit, feature_gates.long_captions, captions_enabled)
+ * - Theme Customization (themes_enabled, feature_gates.camera_theme, feature_gates.app_icon_picker)
+ * - Feature Gates (longer_video, camera_roll, custom_widget_frames)
  * 
  * Strictly adheres to verified allowlisted fields and string type requirements.
  * Rejects invented keys to ensure clean schema and client stability.
@@ -39,6 +40,16 @@ function parseScriptArgument(argString) {
     return params;
 }
 
+function safeJsonParse(str, fallback) {
+    if (!str || typeof str !== "string") return fallback;
+    try {
+        var parsed = JSON.parse(str);
+        return (parsed && typeof parsed === "object") ? parsed : fallback;
+    } catch (e) {
+        return fallback;
+    }
+}
+
 function transformRemoteConfigResponse(bodyString, options) {
     options = options || {};
     if (!bodyString || typeof bodyString !== "string") {
@@ -66,6 +77,11 @@ function transformRemoteConfigResponse(bodyString, options) {
         return { modified: false, body: bodyString, reason: "entries_schema_mismatch" };
     }
 
+    // Ensure state is UPDATE to force client-side SDK cache invalidation
+    if (data.state !== "UPDATE") {
+        data.state = "UPDATE";
+    }
+
     // Clone default overrides
     var overrides = {};
     for (var i = 0; i < ALLOWED_FIELDS.length; i++) {
@@ -73,16 +89,19 @@ function transformRemoteConfigResponse(bodyString, options) {
         overrides[field] = DEFAULT_CONFIG_OVERRIDES[field];
     }
 
+    var videoSec = 60.0;
     // Apply custom parameters if provided via arguments
     if (options.videoDuration !== undefined && options.videoDuration !== null && options.videoDuration !== "") {
         var durationNum = parseInt(options.videoDuration, 10);
         if (!isNaN(durationNum) && durationNum > 0 && durationNum <= 300) {
             overrides["video_max_duration_seconds"] = String(durationNum);
+            videoSec = Number(durationNum);
         }
     }
 
+    var isAudio = true;
     if (options.audioEnabled !== undefined && options.audioEnabled !== null) {
-        var isAudio = options.audioEnabled === true || options.audioEnabled === "true";
+        isAudio = options.audioEnabled === true || options.audioEnabled === "true";
         overrides["video_audio_enabled"] = isAudio ? "true" : "false";
     }
 
@@ -93,12 +112,15 @@ function transformRemoteConfigResponse(bodyString, options) {
         }
     }
 
+    var isThemes = true;
     if (options.themesEnabled !== undefined && options.themesEnabled !== null) {
-        var isThemes = options.themesEnabled === true || options.themesEnabled === "true";
+        isThemes = options.themesEnabled === true || options.themesEnabled === "true";
         overrides["themes_enabled"] = isThemes ? "true" : "false";
     }
 
     var modifiedCount = 0;
+
+    // 1. Update allowlisted flat keys
     for (var j = 0; j < ALLOWED_FIELDS.length; j++) {
         var key = ALLOWED_FIELDS[j];
         var targetVal = String(overrides[key]);
@@ -106,6 +128,78 @@ function transformRemoteConfigResponse(bodyString, options) {
             data.entries[key] = targetVal;
             modifiedCount++;
         }
+    }
+
+    // 2. Update native feature_gates if present or needed
+    if (data.entries.feature_gates !== undefined) {
+        var fgObj = safeJsonParse(data.entries.feature_gates, {});
+        var fgChanged = false;
+        var fgKeysToEnable = ["longer_video", "longer_videos", "video_recording", "long_captions", "camera_roll", "camera_roll_video"];
+        if (isThemes) {
+            fgKeysToEnable.push("camera_theme", "app_icon_picker", "custom_widget_frames");
+        }
+        for (var k = 0; k < fgKeysToEnable.length; k++) {
+            var fgK = fgKeysToEnable[k];
+            if (fgObj[fgK] !== "enabled") {
+                fgObj[fgK] = "enabled";
+                fgChanged = true;
+            }
+        }
+        if (fgChanged) {
+            data.entries.feature_gates = JSON.stringify(fgObj);
+            modifiedCount++;
+        }
+    }
+
+    // 3. Update native camera config if present
+    if (data.entries.camera !== undefined) {
+        var camObj = safeJsonParse(data.entries.camera, {});
+        var camChanged = false;
+        if (camObj.max_duration !== videoSec) {
+            camObj.max_duration = videoSec;
+            camChanged = true;
+        }
+        if (camObj.gold_max_duration !== videoSec) {
+            camObj.gold_max_duration = videoSec;
+            camChanged = true;
+        }
+        if (camObj.video_max_duration !== videoSec) {
+            camObj.video_max_duration = videoSec;
+            camChanged = true;
+        }
+        if (isAudio && camObj.sound_enabled !== true) {
+            camObj.sound_enabled = true;
+            camObj.microphone = true;
+            camChanged = true;
+        }
+        if (camChanged) {
+            data.entries.camera = JSON.stringify(camObj);
+            modifiedCount++;
+        }
+    }
+
+    // 4. Update native camera_roll config if present
+    if (data.entries.camera_roll !== undefined) {
+        var crObj = safeJsonParse(data.entries.camera_roll, {});
+        var crChanged = false;
+        if (crObj.max_duration !== videoSec) {
+            crObj.max_duration = videoSec;
+            crChanged = true;
+        }
+        if (crObj.gold_max_duration !== videoSec) {
+            crObj.gold_max_duration = videoSec;
+            crChanged = true;
+        }
+        if (crChanged) {
+            data.entries.camera_roll = JSON.stringify(crObj);
+            modifiedCount++;
+        }
+    }
+
+    // 5. Update captions_enabled if present
+    if (data.entries.captions_enabled !== undefined && data.entries.captions_enabled !== "true") {
+        data.entries.captions_enabled = "true";
+        modifiedCount++;
     }
 
     return {
@@ -155,6 +249,7 @@ if (typeof module !== "undefined" && module.exports) {
         ALLOWED_FIELDS: ALLOWED_FIELDS,
         DEFAULT_CONFIG_OVERRIDES: DEFAULT_CONFIG_OVERRIDES,
         parseScriptArgument: parseScriptArgument,
+        safeJsonParse: safeJsonParse,
         transformRemoteConfigResponse: transformRemoteConfigResponse,
         handleResponse: handleResponse
     };

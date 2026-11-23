@@ -1,0 +1,69 @@
+name: Shadowrocket Module CI & Validation
+
+on:
+  push:
+    branches: [ feature/shadowrocket-edition, main ]
+    paths:
+      - 'shadowrocket/**'
+      - '.github/workflows/shadowrocket_ci.yml'
+  pull_request:
+    branches: [ feature/shadowrocket-edition, main ]
+    paths:
+      - 'shadowrocket/**'
+      - '.github/workflows/shadowrocket_ci.yml'
+  workflow_dispatch:
+
+jobs:
+  validate-and-test:
+    name: Lint, Test & Validate Modules
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Validate Module Syntax & Structure
+        run: |
+          echo "Verifying Shadowrocket module files existence..."
+          test -f shadowrocket/modules/LocketEnhanced.sgmodule
+          test -f shadowrocket/modules/LocketEnhanced-Beta.sgmodule
+          
+          # Ensure [MITM] includes %APPEND% to protect user's configuration
+          grep -q "hostname = %APPEND%" shadowrocket/modules/LocketEnhanced.sgmodule
+          grep -q "hostname = %APPEND%" shadowrocket/modules/LocketEnhanced-Beta.sgmodule
+          
+          # Ensure script-path is pinned to release tag and not floating /main/
+          ! grep "script-path=.*\/main\/" shadowrocket/modules/LocketEnhanced.sgmodule
+          ! grep "script-path=.*\/main\/" shadowrocket/modules/LocketEnhanced-Beta.sgmodule
+          echo "Module syntax header and pinned script-paths verified."
+
+      - name: Run JavaScript Unit Tests
+        run: |
+          node --test shadowrocket/tests/*.test.js
+
+      - name: Security & PII Leak Scanner
+        run: |
+          echo "Scanning JavaScript scripts for accidental hardcoded credentials or private keys..."
+          # Fail if any private key or live auth token is accidentally committed
+          ! grep -r "BEGIN RSA PRIVATE KEY" shadowrocket/
+          ! grep -r "BEGIN PRIVATE KEY" shadowrocket/
+          echo "Security scan clean: 0 sensitive credentials found."
+
+      - name: Package Shadowrocket Distribution Artifacts
+        run: |
+          mkdir -p dist/shadowrocket
+          cp shadowrocket/modules/*.sgmodule dist/shadowrocket/
+          tar -czf dist/locket-enhanced-shadowrocket-v0.1.0-beta.tar.gz shadowrocket/
+          ls -lh dist/
+
+      - name: Upload Module Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: locket-shadowrocket-modules
+          path: dist/
+          retention-days: 14

@@ -3,25 +3,25 @@
 #!category=Locket Enhanced Diagnostic
 #!author=Locket Enhanced Team
 #!homepage=https://github.com/nson496/LocketEnhanced-Shadowrocket
-#!version=0.1.5-beta
+#!version=0.1.6-beta
 #!system=ios
 
 # KHÔNG CHẶN UDP/QUIC: Để các kết nối mạng hoạt động tự nhiên 100% theo thiết kế gốc của iOS.
 
 [Script]
 # 1. Giám sát Firebase Remote Config Fetch (Request & Response thụ động)
-Locket_Diag_RC_Fetch_Req = type=http-request, pattern=^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.5-beta/scripts/utils/locket_diagnostic.js, timeout=10
-Locket_Diag_RC_Fetch_Res = type=http-response, pattern=^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.5-beta/scripts/utils/locket_diagnostic.js, requires-body=false, timeout=10
+Locket_Diag_RC_Fetch_Req = type=http-request, pattern=^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.6-beta/scripts/utils/locket_diagnostic.js, timeout=10
+Locket_Diag_RC_Fetch_Res = type=http-response, pattern=^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.6-beta/scripts/utils/locket_diagnostic.js, requires-body=false, timeout=10
 
 # 2. Giám sát Firebase Realtime Stream (Request thụ động, không chặn luồng)
-Locket_Diag_RC_Stream_Req = type=http-request, pattern=^https?:\/\/firebaseremoteconfigrealtime\.googleapis\.com\/v1\/projects\/locket-4252a\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.5-beta/scripts/utils/locket_diagnostic.js, timeout=10
+Locket_Diag_RC_Stream_Req = type=http-request, pattern=^https?:\/\/firebaseremoteconfigrealtime\.googleapis\.com\/v1\/projects\/locket-4252a\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.6-beta/scripts/utils/locket_diagnostic.js, timeout=10
 
 # 3. Giám sát API Locket Camera (Kiểm tra xem cờ tính năng có nằm ở backend riêng không)
-Locket_Diag_API_Req = type=http-request, pattern=^https?:\/\/api\.locketcamera\.com\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.5-beta/scripts/utils/locket_diagnostic.js, timeout=10
-Locket_Diag_API_Res = type=http-response, pattern=^https?:\/\/api\.locketcamera\.com\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.5-beta/scripts/utils/locket_diagnostic.js, requires-body=false, timeout=10
+Locket_Diag_API_Req = type=http-request, pattern=^https?:\/\/api\.locketcamera\.com\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.6-beta/scripts/utils/locket_diagnostic.js, timeout=10
+Locket_Diag_API_Res = type=http-response, pattern=^https?:\/\/api\.locketcamera\.com\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.6-beta/scripts/utils/locket_diagnostic.js, requires-body=false, timeout=10
 
 # 4. Giám sát Cloud Functions của Locket
-Locket_Diag_CF_Req = type=http-request, pattern=^https?:\/\/us-central1-locket-4252a\.cloudfunctions\.net\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.5-beta/scripts/utils/locket_diagnostic.js, timeout=10
+Locket_Diag_CF_Req = type=http-request, pattern=^https?:\/\/us-central1-locket-4252a\.cloudfunctions\.net\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.6-beta/scripts/utils/locket_diagnostic.js, timeout=10
 
 [MITM]
 # Giới hạn chặt chẽ phạm vi MITM vào các máy chủ của Locket và Firebase của dự án, tuyệt đối không wildcard

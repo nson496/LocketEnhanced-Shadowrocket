@@ -1,0 +1,11 @@
+{
+  "entries": {
+    "video_max_duration_seconds": "15",
+    "video_audio_enabled": "false",
+    "can_upload_video": "false",
+    "caption_character_limit": "150",
+    "themes_enabled": "false"
+  },
+  "state": "UPDATE",
+  "templateVersion": "100"
+}

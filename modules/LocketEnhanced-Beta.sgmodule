@@ -3,23 +3,33 @@
 #!category=Locket Enhanced Beta
 #!author=Locket Enhanced Team
 #!homepage=https://github.com/nson496/LocketEnhanced-Shadowrocket
-#!version=0.1.5-beta
+#!version=0.1.6-beta
 #!system=ios
+
+[General]
+force-http-engine-hosts = %APPEND% firebaseremoteconfig.googleapis.com:443, firebaseremoteconfigrealtime.googleapis.com:443, api.locketcamera.com:443
+
+[Rule]
+# Chặn UDP QUIC để ép Firebase SDK fallback sang TCP (HTTP/2)
+AND,((DOMAIN,firebaseremoteconfig.googleapis.com), (PROTOCOL,UDP)),REJECT
+AND,((DOMAIN,firebaseremoteconfigrealtime.googleapis.com), (PROTOCOL,UDP)),REJECT
 
 [Header Rewrite]
 ^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+ header-del If-None-Match
+^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+ header-del if-none-match
 ^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+ header-del If-Modified-Since
+^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+ header-del if-modified-since
 ^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+ header-del x-goog-if-none-match
 
 [Script]
-# 1. Remote Config với tham số linh hoạt (Pinned to v0.1.5-beta)
-Locket_RemoteConfig_Beta = type=http-response, pattern=^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.5-beta/scripts/core/locket_remoteconfig.js, argument=videoDuration=60&audio=true&captionLimit=500, requires-body=true, max-size=-1, timeout=30
+# 1. Remote Config với tham số linh hoạt (Pinned to v0.1.6-beta)
+Locket_RemoteConfig_Beta = type=http-response, pattern=^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.6-beta/scripts/core/locket_remoteconfig.js, argument=videoDuration=60&audio=true&captionLimit=500, requires-body=true, max-size=-1, timeout=30
 
-# 2. Diagnostic Logger - Giám sát Realtime Stream không can thiệp payload (Zero PII, Pinned to v0.1.5-beta)
-Locket_Realtime_Diag = type=http-request, pattern=^https?:\/\/firebaseremoteconfigrealtime\.googleapis\.com\/v1\/projects\/locket-4252a\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.5-beta/scripts/utils/locket_diagnostic.js, timeout=10
+# 2. Diagnostic Logger - Giám sát Realtime Stream không can thiệp payload (Zero PII, Pinned to v0.1.6-beta)
+Locket_Realtime_Diag = type=http-request, pattern=^https?:\/\/firebaseremoteconfigrealtime\.googleapis\.com\/v1\/projects\/locket-4252a\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.6-beta/scripts/utils/locket_diagnostic.js, timeout=10
 
-# 3. Profile Badge (Thử nghiệm hiển thị Gold trên trang cá nhân - Pinned to v0.1.5-beta)
-Locket_Profile_Beta = type=http-response, pattern=^https?:\/\/api\.locketcamera\.com\/fetchUserV2, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.5-beta/scripts/features/locket_profile_badge.js, requires-body=true, max-size=-1, timeout=30
+# 3. Profile Badge (Thử nghiệm hiển thị Gold trên trang cá nhân - Pinned to v0.1.6-beta)
+Locket_Profile_Beta = type=http-response, pattern=^https?:\/\/api\.locketcamera\.com\/fetchUserV2, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.6-beta/scripts/features/locket_profile_badge.js, requires-body=true, max-size=-1, timeout=30
 
 [MITM]
 hostname = %APPEND% firebaseremoteconfig.googleapis.com, firebaseremoteconfigrealtime.googleapis.com, api.locketcamera.com

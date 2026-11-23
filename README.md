@@ -1,6 +1,6 @@
 # Locket Enhanced — Shadowrocket Edition
 
-[![Release](https://img.shields.io/badge/Release-v0.1.5--beta-blue.svg)](https://github.com/nson496/LocketEnhanced-Shadowrocket/releases)
+[![Release](https://img.shields.io/badge/Release-v0.1.6--beta-blue.svg)](https://github.com/nson496/LocketEnhanced-Shadowrocket/releases)
 [![Status](https://img.shields.io/badge/Status-Public%20Distribution-success.svg)](https://github.com/nson496/LocketEnhanced-Shadowrocket)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Zero PII](https://img.shields.io/badge/Privacy-Zero%20PII-brightgreen.svg)](docs/SECURITY.md)
@@ -9,31 +9,31 @@ Locket Enhanced Shadowrocket Edition là hệ sinh thái công cụ dành cho �
 
 ---
 
-## 🚀 Quick Install (Cài Đặt Nhanh v0.1.5-beta)
+## 🚀 Quick Install (Cài Đặt Nhanh v0.1.6-beta)
 
 ### 🔬 Khuyên Dùng: Chế Độ Chẩn Đoán Độc Lập (Diagnostic Only)
 *Giám sát lưu lượng mạng thụ động, không sửa đổi dữ liệu, không chặn UDP/QUIC, xác định chính xác endpoint Locket thực tế sử dụng:*
 - **One-Click Import Safari:**
   ```text
-  shadowrocket://install/module?url=https%3A%2F%2Fraw.githubusercontent.com%2Fnson496%2FLocketEnhanced-Shadowrocket%2Fv0.1.5-beta%2Fmodules%2FLocketEnhanced-Diagnostic.sgmodule
+  shadowrocket://install/module?url=https%3A%2F%2Fraw.githubusercontent.com%2Fnson496%2FLocketEnhanced-Shadowrocket%2Fv0.1.6-beta%2Fmodules%2FLocketEnhanced-Diagnostic.sgmodule
   ```
 - **HTTPS URL Thủ Công:**
   ```text
-  https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.5-beta/modules/LocketEnhanced-Diagnostic.sgmodule
+  https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.6-beta/modules/LocketEnhanced-Diagnostic.sgmodule
   ```
 
 ---
 
 ### 📦 Các Module Tinh Chỉnh Khác (Experimental)
 
-- **Bản Tiêu Chuẩn (Stable Remote Config - v0.1.5-beta):**
+- **Bản Tiêu Chuẩn (Stable Remote Config - v0.1.6-beta):**
   ```text
-  https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.5-beta/modules/LocketEnhanced.sgmodule
+  https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.6-beta/modules/LocketEnhanced.sgmodule
   ```
 
-- **Bản Beta (Configurable Arguments, Realtime Diag - v0.1.5-beta):**
+- **Bản Beta (Configurable Arguments, Realtime Diag - v0.1.6-beta):**
   ```text
-  https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.5-beta/modules/LocketEnhanced-Beta.sgmodule
+  https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.6-beta/modules/LocketEnhanced-Beta.sgmodule
   ```
 
 4. Bật công tắc Module vừa thêm.
@@ -41,19 +41,20 @@ Locket Enhanced Shadowrocket Edition là hệ sinh thái công cụ dành cho �
 
 ---
 
-## ✨ Tính Năng Hỗ Trợ (Feature Matrix)
+## ✨ Tính Năng Hỗ Trợ (Feature Feasibility Matrix)
 
-| Tính Năng | Mô Tả | Trạng Thái |
-| :--- | :--- | :--- |
-| **Video Max Duration 60s** | Mở rộng thời lượng quay video lên đến 60 giây (mặc định Locket: 3s - 10s) | ✅ Functional (Remote Config) |
-| **High Quality Audio** | Bật stream âm thanh chất lượng cao cho video | ✅ Functional (Remote Config) |
-| **Extended Caption Limit** | Mở rộng giới hạn ký tự caption lên 500 ký tự | ✅ Functional (Remote Config) |
-| **UI Themes Customization** | Mở khóa giao diện và palette theme mở rộng | ✅ Functional (Remote Config) |
-| **Cache Buster (HTTP 304 Guard)** | Tự động loại bỏ cache headers để áp dụng config mới ngay lập tức | ✅ Functional (Script) |
-| **Safe Mode & Zero PII** | Tuyệt đối không đọc token, không can thiệp thanh toán hoặc chữ ký số | 🛡️ Verified Safe |
+| Tính Năng | Cơ Chế Thực Tế | Trạng Thái | Ghi Chú Kỹ Thuật |
+| :--- | :--- | :--- | :--- |
+| **Passive Diagnostic Mode** | HTTP Request & Response logger không can thiệp luồng | 🟢 **VERIFIED** | Đã xác nhận hoạt động 100% trên iPhone thực tế qua log `[LocketDiag]` |
+| **QUIC Rejection & TCP Fallback** | `[Rule]` reject UDP port 443 trên domain Remote Config | 🟢 **VERIFIED** | Ép iOS network stack fallback sang TCP HTTP/2 để Shadowrocket MITM giải mã được |
+| **Cache-Busting (304 Guard)** | `[Header Rewrite]` xóa `If-None-Match` & `If-Modified-Since` | 🟢 **VERIFIED** | Đảm bảo máy chủ Firebase luôn trả HTTP 200 cùng payload mới nhất |
+| **Video Duration (60s)** | Client Remote Config (`camera.max_duration`, `feature_gates`) | 🟡 **NOT_VERIFIED** | Payload đã được ghi đè, nhưng native AVFoundation & backend server chưa xác nhận chấp thuận moment > 10s |
+| **Extended Captions** | Client Remote Config (`captions_enabled`, `long_captions`) | 🟡 **NOT_VERIFIED** | Đã cập nhật `feature_gates.long_captions = "enabled"`, cần backend API hỗ trợ lưu caption dài |
+| **UI Themes Customization** | Client Remote Config (`feature_gates.camera_theme`, `app_icon_picker`) | 🟡 **NOT_VERIFIED** | Cờ cấu hình đã bật trong Remote Config, cần kiểm tra render thực tế trên Swift UIKit |
+| **RevenueCat Receipt Spoofing** | Giả lập hóa đơn thanh toán / fake entitlement | 🔴 **NOT_SUPPORTED** | Nghiêm cấm theo nguyên tắc an toàn, đạo đức & chống vi phạm pháp luật |
 
 > [!NOTE]
-> Hệ thống áp dụng cơ chế Remote Config rewriting an toàn, không giả lập hóa đơn App Store / RevenueCat Trusted Entitlements nhằm đảm bảo độ tin cậy và không gây khóa tài khoản.
+> Dự án áp dụng nguyên tắc **No Fake Success**: Không tuyên bố tính năng hoạt động nếu chưa có kiểm chứng phần cứng thực tế và máy chủ xác nhận. Tuyệt đối không giả mạo giao dịch thanh toán hoặc hóa đơn.
 
 ---
 

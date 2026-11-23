@@ -1,0 +1,13 @@
+{
+  "result": {
+    "status": 200,
+    "data": {
+      "uid": "sanitized_user_id_001",
+      "first_name": "Test",
+      "last_name": "User",
+      "badge": null,
+      "profile_picture_url": "https://example.com/avatar.jpg",
+      "username": "testuser"
+    }
+  }
+}

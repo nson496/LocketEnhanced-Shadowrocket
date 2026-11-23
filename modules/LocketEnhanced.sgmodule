@@ -3,18 +3,29 @@
 #!category=Locket Enhanced
 #!author=Locket Enhanced Team
 #!homepage=https://github.com/nson496/LocketEnhanced-Shadowrocket
-#!version=0.1.5-beta
+#!version=0.1.6-beta
 #!system=ios
+
+[General]
+# Ép Shadowrocket HTTP engine xử lý Firebase Remote Config để đảm bảo MITM và Header Rewrite hoạt động chính xác
+force-http-engine-hosts = %APPEND% firebaseremoteconfig.googleapis.com:443, firebaseremoteconfigrealtime.googleapis.com:443
+
+[Rule]
+# Chặn UDP QUIC để ép Firebase SDK fallback sang TCP (HTTP/2), cho phép HTTPS MITM giải mã ổn định 100%
+AND,((DOMAIN,firebaseremoteconfig.googleapis.com), (PROTOCOL,UDP)),REJECT
+AND,((DOMAIN,firebaseremoteconfigrealtime.googleapis.com), (PROTOCOL,UDP)),REJECT
 
 [Header Rewrite]
 # Xóa các header điều kiện ETag và Cache để chống lỗi server trả HTTP 304 Not Modified rỗng body
 ^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+ header-del If-None-Match
+^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+ header-del if-none-match
 ^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+ header-del If-Modified-Since
+^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+ header-del if-modified-since
 ^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+ header-del x-goog-if-none-match
 
 [Script]
-# 1. Firebase Remote Config Response - Mở khóa Video 60s có tiếng, Caption 500 ký tự, Theme (Pinned to v0.1.5-beta)
-Locket_RemoteConfig = type=http-response, pattern=^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.5-beta/scripts/core/locket_remoteconfig.js, requires-body=true, max-size=-1, timeout=30
+# 1. Firebase Remote Config Response - Mở khóa Video 60s có tiếng, Caption 500 ký tự, Theme (Pinned to v0.1.6-beta)
+Locket_RemoteConfig = type=http-response, pattern=^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/v0.1.6-beta/scripts/core/locket_remoteconfig.js, requires-body=true, max-size=-1, timeout=30
 
 [MITM]
 hostname = %APPEND% firebaseremoteconfig.googleapis.com
