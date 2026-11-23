@@ -4,6 +4,25 @@ Tất cả các thay đổi đáng chú ý của dự án **Locket Enhanced Shad
 
 ---
 
+## [v0.1.3-beta] — 2026-11-23
+
+### 🔧 Bản Vá Đồng Bộ Phiên Bản & Cố Định Script-Path (Tag-Pinned Distribution)
+- **Cố định script-path theo Release Tag (`v0.1.3-beta`):**
+  - Chuyển toàn bộ các tham chiếu `script-path` trong `LocketEnhanced.sgmodule` và `LocketEnhanced-Beta.sgmodule` sang URL cố định theo tag `v0.1.3-beta`, loại bỏ hoàn toàn tham chiếu trôi nổi `/main/`.
+  - Khắc phục triệt để hiện tượng lệch phiên bản (version skew) khi nhánh `main` được cập nhật trong tương lai.
+- **Chuẩn hóa Version Metadata:**
+  - Đồng bộ `#!version=0.1.3-beta` trên cả Standard và Beta Module.
+- **Tích Hợp CI Kiểm Tra Đồng Bộ Phiên Bản:**
+  - Bổ sung `shadowrocket/tests/version_consistency.test.js` kiểm tra tự động:
+    1. Đảm bảo toàn bộ module khai báo cùng số hiệu phiên bản.
+    2. Đảm bảo toàn bộ `script-path` được ghim vào release tag, không chứa `/main/`.
+    3. Đảm bảo file JavaScript được tham chiếu tồn tại cục bộ và cú pháp hợp lệ.
+    4. Quét bảo mật ngăn chặn cấu hình wildcard MITM (`hostname = *`) hoặc hook RevenueCat không được phép.
+- **Loại Bỏ Tham Chiếu Thừa:**
+  - Dọn sạch các hook không dùng, tối ưu phạm vi giải mã HTTPS.
+
+---
+
 ## [v0.1.2-beta] — 2026-11-23
 
 ### 🛡️ Thẩm Định Tính Năng & Tối Ưu Tương Thích Runtime
