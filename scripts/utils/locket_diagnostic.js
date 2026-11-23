@@ -5,7 +5,7 @@
  * Inspects network events on Firebase Remote Config and Realtime endpoints.
  * Strictly complies with Zero PII policy:
  * - Records ONLY metadata: Timestamp, Host, Method, Path.
- * - NEVER logs Authorization, Cookie, User-Agent tokens, request bodies, or response bodies.
+ * - Never logs sensitive headers, credentials, request bodies, or response bodies.
  * - Non-blocking: Returns $done({}) immediately without delaying long-lived HTTP/2 streams.
  */
 
