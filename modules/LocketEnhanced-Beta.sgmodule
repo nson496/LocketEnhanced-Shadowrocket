@@ -1,0 +1,26 @@
+#!name=Locket Enhanced Beta (Shadowrocket Edition)
+#!desc=Bản thử nghiệm tính năng cao cấp: Video 60s có tiếng, Tùy chỉnh tham số thời lượng, Caption dài, Badge & Theme.
+#!category=Locket Enhanced Beta
+#!author=Locket Enhanced Team
+#!homepage=https://github.com/nson496/LocketEnhanced-Shadowrocket
+#!version=0.1.1-beta
+#!system=ios
+
+[Rule]
+AND,((DOMAIN,firebaseremoteconfig.googleapis.com),(PROTOCOL,UDP)),REJECT
+AND,((DOMAIN,api.locketcamera.com),(PROTOCOL,UDP)),REJECT
+
+[Header Rewrite]
+^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+ header-del If-None-Match
+^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+ header-del If-Modified-Since
+^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+ header-del x-goog-if-none-match
+
+[Script]
+# 1. Remote Config với tham số linh hoạt (Video 60s, Sound=true, Caption 500)
+Locket_RemoteConfig_Beta = type=http-response, pattern=^https?:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/main/scripts/core/locket_remoteconfig.js, argument=videoDuration=60&audio=true&captionLimit=500, requires-body=true, max-size=-1, timeout=30
+
+# 2. Profile Badge trên API chính thức
+Locket_Profile_Beta = type=http-response, pattern=^https?:\/\/api\.locketcamera\.com\/fetchUserV2, script-path=https://raw.githubusercontent.com/nson496/LocketEnhanced-Shadowrocket/main/scripts/features/locket_profile_badge.js, requires-body=true, max-size=-1, timeout=30
+
+[MITM]
+hostname = %APPEND% firebaseremoteconfig.googleapis.com, api.locketcamera.com
